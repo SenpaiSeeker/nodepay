@@ -24,13 +24,19 @@ CONNECTION_STATES = {
     "NONE_CONNECTION": 3
 }
 
-BASE_PROXY = "CHANGE YOUR BASE PROXY"
+def load_proxies(proxy_file: str = "proxy.txt"):
+    try:
+        with open(proxy_file, "r") as file:
+            return file.read().splitlines()
+    except Exception as e:
+        logger.error(f"Failed to load proxies: {e}")
+        raise SystemExit("Exiting due to failure in loading proxies")
 
 
 class AccountInfo:
     def __init__(self, token):
         self.token = token
-        self.proxies = [BASE_PROXY] * 3  # Each account uses the same proxy up to 3 times
+        self.proxies = load_proxies()
         self.status_connect = CONNECTION_STATES["NONE_CONNECTION"]
         self.account_data = {}
         self.retries = 0
@@ -153,9 +159,6 @@ async def ping(account_info, proxy):
 
 
 def process_account(token):
-    """
-    Process a single account: Initialize proxies and start asyncio event loop for this account.
-    """
     account_info = AccountInfo(token)
     asyncio.run(render_profile_info(account_info))
 
@@ -168,9 +171,8 @@ async def main():
         for token in tokens:
             futures.append(executor.submit(process_account, token))
 
-        # Wait for all tasks to complete
         for future in futures:
-            future.result()  # Block until each future is done
+            future.result()
 
 
 if __name__ == '__main__':
