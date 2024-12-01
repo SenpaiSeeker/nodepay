@@ -13,7 +13,7 @@ DOMAIN_API = {
     "SESSION": "http://api.nodepay.ai/api/auth/session",
     
     "PING": [
-        "https://nw.nodepay.org/api/network/ping"
+        "https://api.nodepay.ai/api/network/ping"
     
     ]
 }
